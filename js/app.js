@@ -9,11 +9,12 @@ const canvascol = 101;
 var Enemy = function (id) {
     this.id = id;
     let x = this.randomG(5);
-    let y = this.randomG(6);
+    let y = this.randomG(5) + 1;
     // Variables applied to each of our instances go here,
     this.x = x * canvascol;
     this.y = (y * canvasrow) - 24;
-    this.speed = this.randomG(500);
+    // min speed 100
+    this.speed = this.randomG(450) + 50;
     this.row = y + 1;
     this.col = x;
     // we've provided one for you to get started
@@ -27,12 +28,12 @@ Enemy.prototype.randomG = function (num) {
 }
 Enemy.prototype.reset = function () {
     // reset variables with new random values;
-    let randomY = this.randomG(6);
+    let randomY = this.randomG(5) + 1;
     this.x = -100;
     this.col = 1;
     this.y = (randomY * canvasrow) - 24;
     this.row = randomY + 1;
-    this.speed = this.randomG(500);
+    this.speed = this.randomG(450) + 50;
 }
 
 // Update the enemy's position, required method for game
@@ -48,7 +49,6 @@ Enemy.prototype.update = function (dt) {
     if (this.x > 500) {
         this.reset();
     }
-    console.log(this.col, this.row);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -66,16 +66,22 @@ var Player = function () {
     this.y = 450;
     this.row = 0;
     this.col = 0;
+    this.score = 0;
     // we've provided one for you to get started
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-boy.png';
 };
+
 Player.prototype.update = function (xm = 0, ym = 0) {
     this.x += xm;
     this.y += ym;
     this.col = (this.x / canvascol) + 1;
     this.row = ((this.y + 24) / canvasrow) + 1;
+    if (this.row == 1) {
+        this.score += 1;
+        this.reset();
+    }
 };
 // Movement depending  on Keybord input 
 Player.prototype.handleInput = function (keyCode) {
@@ -108,7 +114,13 @@ Player.prototype.handleInput = function (keyCode) {
 // Draw the enemy on the screen, required method for game
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    this.scoret();
 };
+Player.prototype.scoret = function () {
+    ctx.font = "24px 'Lobster', cursive";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(`Player Score: ${this.score}`, 180, 40, 156);
+}
 // Take the player to the initial position
 Player.prototype.reset = function () {
     this.x = canvascol * 2;
@@ -118,11 +130,11 @@ Player.prototype.reset = function () {
 Player.prototype.collisions = function () {
     for (enemy of allEnemies) {
         if (enemy.row == this.row && enemy.col == this.col) {
-            setTimeout(this.reset.bind(this), 0);
+            this.score = 0;
+            setTimeout(this.reset.bind(this), 10);
         }
     }
 }
-
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -144,3 +156,6 @@ document.addEventListener('keyup', function (e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+
+
