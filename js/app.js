@@ -2,15 +2,17 @@
 const canvasWidth = 505;
 const canvasHeight = 606;
 // 'x' value and 'y' movement value to add, from engine.js:137
-const cavasrow = 83;
+const canvasrow = 83;
 const canvascol = 101;
 
 // Enemies our player must avoid
 var Enemy = function (x, y, speed) {
     // Variables applied to each of our instances go here,
     this.x = x * canvascol;
-    this.y = y * cavasrow - 24;
+    this.y = (y * canvasrow) - 24;
     this.speed = speed;
+    this.row = y + 1;
+    this.col = x;
     // we've provided one for you to get started
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -24,6 +26,11 @@ Enemy.prototype.update = function (dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x = Math.round(this.x + (dt * this.speed));
+    // Enemy column position
+    if (this.x % canvascol == 0) {
+        this.col += 1;
+    }
+    console.log(this.row, this.col);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -37,8 +44,10 @@ Enemy.prototype.render = function () {
 
 var Player = function () {
     // Variables applied to each of our instances go here,
-    this.x = 202;
+    this.x = canvascol * 2;
     this.y = 450;
+    this.row = 0;
+    this.col = 0;
     // we've provided one for you to get started
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -47,6 +56,8 @@ var Player = function () {
 Player.prototype.update = function (xm = 0, ym = 0) {
     this.x += xm;
     this.y += ym;
+    this.col = (this.x / canvascol) + 1;
+    this.row = ((this.y + 24) / canvasrow) + 1;
 };
 
 Player.prototype.handleInput = function (keyCode) {
@@ -62,13 +73,15 @@ Player.prototype.handleInput = function (keyCode) {
             }
             break;
         case 'up':
-            if (this.y - cavasrow >= -48) {
-                this.update(0, -cavasrow);
+            if (this.y - canvasrow >= -24 && this.y == 450) {
+                this.update(0, (+24 - canvasrow));
+            } else if (this.y - canvasrow >= -24) {
+                this.update(0, -canvasrow);
             }
             break;
         case 'down':
-            if (this.y + cavasrow < 450) {
-                this.update(0, cavasrow);
+            if (this.y + canvasrow < 450) {
+                this.update(0, canvasrow);
             }
             break;
     }
@@ -78,15 +91,28 @@ Player.prototype.handleInput = function (keyCode) {
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+Player.prototype.reset = function () {
+    console.log('ya');
+    this.x = canvascol * 2;
+    this.y = 450;
+}
+// Send the player to the start point after collision
+Player.prototype.collisions = function () {
+    for (enemy of allEnemies) {
+        if (enemy.row == this.row && enemy.col == this.col) {
+            setTimeout(this.reset.bind(this), 100);
+        }
+    }
+}
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var player = new Player();
-var enemy1 = new Enemy(0, 0, 100);
+var enemy1 = new Enemy(0, 2, 50);
 var enemy2 = new Enemy(0, 5, 100);
-var allEnemies = [enemy1, enemy2];
+var allEnemies = [enemy1];
 
 
 
