@@ -6,11 +6,14 @@ const canvasrow = 83;
 const canvascol = 101;
 
 // Enemies our player must avoid
-var Enemy = function (x, y, speed) {
+var Enemy = function (id) {
+    this.id = id;
+    let x = this.randomG(5);
+    let y = this.randomG(6);
     // Variables applied to each of our instances go here,
     this.x = x * canvascol;
     this.y = (y * canvasrow) - 24;
-    this.speed = speed;
+    this.speed = this.randomG(500);
     this.row = y + 1;
     this.col = x;
     // we've provided one for you to get started
@@ -18,6 +21,19 @@ var Enemy = function (x, y, speed) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 };
+// creates a random number 
+Enemy.prototype.randomG = function (num) {
+    return Math.floor(Math.random() * num);
+}
+Enemy.prototype.reset = function () {
+    // reset variables with new random values;
+    let randomY = this.randomG(6);
+    this.x = -100;
+    this.col = 1;
+    this.y = (randomY * canvasrow) - 24;
+    this.row = randomY + 1;
+    this.speed = this.randomG(500);
+}
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -27,10 +43,12 @@ Enemy.prototype.update = function (dt) {
     // all computers.
     this.x = Math.round(this.x + (dt * this.speed));
     // Enemy column position
-    if (this.x % canvascol == 0) {
-        this.col += 1;
+
+    this.col = Math.round(this.x / canvascol) + 1;
+    if (this.x > 500) {
+        this.reset();
     }
-    console.log(this.row, this.col);
+    console.log(this.col, this.row);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -59,7 +77,7 @@ Player.prototype.update = function (xm = 0, ym = 0) {
     this.col = (this.x / canvascol) + 1;
     this.row = ((this.y + 24) / canvasrow) + 1;
 };
-
+// Movement depending  on Keybord input 
 Player.prototype.handleInput = function (keyCode) {
     switch (keyCode) {
         case 'left':
@@ -91,8 +109,8 @@ Player.prototype.handleInput = function (keyCode) {
 Player.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+// Take the player to the initial position
 Player.prototype.reset = function () {
-    console.log('ya');
     this.x = canvascol * 2;
     this.y = 450;
 }
@@ -100,7 +118,7 @@ Player.prototype.reset = function () {
 Player.prototype.collisions = function () {
     for (enemy of allEnemies) {
         if (enemy.row == this.row && enemy.col == this.col) {
-            setTimeout(this.reset.bind(this), 100);
+            setTimeout(this.reset.bind(this), 0);
         }
     }
 }
@@ -110,12 +128,10 @@ Player.prototype.collisions = function () {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var player = new Player();
-var enemy1 = new Enemy(0, 2, 50);
-var enemy2 = new Enemy(0, 5, 100);
-var allEnemies = [enemy1];
-
-
-
+var allEnemies = [];
+for (let i = 0; i < 10; i++) {
+    allEnemies.push(new Enemy(i));
+}
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function (e) {
