@@ -2,19 +2,26 @@
 
 ## Table of Contents
 
-- [Instructions](#instructions)
-- [Contributing](#contributing)
+## Table of Contents
+
+* [Description](#Description)
+* [Instructions](#instructions)
+* [Contributing](#contributing)
+
+## Description
+The Classic Arcade Game Clone: In this game, you have a Player and Enemies (bugs). The goal of the player is to reach the water, without colliding into any one of the enemies.  
 
 ## Instructions
 
-Use this [rubric](https://review.udacity.com/#!/rubrics/15/view) for self-checking your submission.
-
-Make sure the functions you write are **object-oriented** - either class functions (like `Player` and `Enemy`) or class prototype functions such as `Enemy.prototype.checkCollisions`. Also make sure that the keyword `this` is used appropriately within your class and class prototype functions to refer to the object the function is called upon.
-
-Your **README.md** file should be updated with instructions on both how to 1. Run and 2. Play your arcade game.
-
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+1. Open the index.html file in your browser.  
+2. Select your character.  
+3. Select difficulty.  
+4. Click on the play button to start the game.  
+5. Use the keypad arrows to move to the water section without colliding.  
+6. If you collide an enemy bug your position resets.
+7. The score goes up once you reach the water.
+8. to restart the game refresh the page.
 
 ## Contributing
 
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
+Bug reports and pull requests are welcome on GitHub at https://github.com/just-kev10/Classic_arcade_game_clone
