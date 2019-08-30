@@ -2,8 +2,6 @@
 
 ## Table of Contents
 
-## Table of Contents
-
 * [Description](#Description)
 * [Instructions](#instructions)
 * [Contributing](#contributing)
