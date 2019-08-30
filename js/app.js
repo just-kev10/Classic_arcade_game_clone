@@ -4,6 +4,9 @@ const canvasHeight = 606;
 // 'x' value and 'y' movement value to add, from engine.js:137
 const canvasrow = 83;
 const canvascol = 101;
+// message at winnig
+const msg = document.querySelector('.message');
+
 
 // Enemies our player must avoid
 var Enemy = function (id) {
@@ -60,7 +63,7 @@ Enemy.prototype.render = function () {
 // This class requires an update(), render() and
 // a handleInput() method.
 
-var Player = function () {
+var Player = function (sprite = 'images/char-cat-girl.png') {
     // Variables applied to each of our instances go here,
     this.x = canvascol * 2;
     this.y = 450;
@@ -70,7 +73,8 @@ var Player = function () {
     // we've provided one for you to get started
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/char-boy.png';
+    this.sprite = sprite;
+
 };
 
 Player.prototype.update = function (xm = 0, ym = 0) {
@@ -80,6 +84,8 @@ Player.prototype.update = function (xm = 0, ym = 0) {
     this.row = ((this.y + 24) / canvasrow) + 1;
     if (this.row == 1) {
         this.score += 1;
+        msg.innerText = "You're winning keep going";
+        msg.style.display = 'inline-block';
         this.reset();
     }
 };
@@ -125,25 +131,22 @@ Player.prototype.scoret = function () {
 Player.prototype.reset = function () {
     this.x = canvascol * 2;
     this.y = 450;
+    setTimeout(function () {
+        msg.style.display = 'none';
+    }, 1000);
 }
 // Send the player to the start point after collision
 Player.prototype.collisions = function () {
     for (enemy of allEnemies) {
         if (enemy.row == this.row && enemy.col == this.col) {
             this.score = 0;
+            msg.innerText = 'You lost try harder again';
+            msg.style.display = 'inline-block';
             setTimeout(this.reset.bind(this), 10);
         }
     }
 }
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var player = new Player();
-var allEnemies = [];
-for (let i = 0; i < 10; i++) {
-    allEnemies.push(new Enemy(i));
-}
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function (e) {
@@ -156,6 +159,79 @@ document.addEventListener('keyup', function (e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+var game = function modal() {
+    const modal = document.getElementById("myModal");
+    const modalContent = document.querySelector('.modal-content');
+    // const modallevel = document.querySelector('.modal-level');
+    const imgs = document.getElementsByClassName("playerSelector");
+    const buttonslvl = document.getElementsByClassName("button");
+    const playbtn = document.querySelector('.play');
+    // modal display
+    modal.style.display = 'block';
+    // elistener for modal childs
+    modalContent.addEventListener('click', function (e) {
+        // modal character selection
+        if (e.target.tagName == 'IMG') {
+            e.target.parentElement.style.border = 'solid black';
+            // relative path save 
+            gameselection[0] = 'images/' + e.target.src.replace(/^.*[\\\/]/, '');
+            for (image of imgs) {
+                let imgSrc = image.firstElementChild.src;
+                if (e.target.src != imgSrc) {
+                    image.style = '';
+                }
+            }
+            //difficulty selection
+        } else if (e.target.className == 'button') {
+            e.target.style.border = 'solid black';
+            gameselection[1] = e.target.firstElementChild.innerText;
+            for (button of buttonslvl) {
+                if (e.target != button) {
+                    button.style.border = 'white';
+                }
+            }
+        } else if (e.target.tagName == 'SPAN'
+            && e.target.parentElement.className == 'button') {
+            e.target.parentElement.style.border = 'solid black';
+            gameselection[1] = e.target.innerText;
+            for (button of buttonslvl) {
+                if (e.target.parentElement != button) {
+                    button.style.border = 'white';
+                }
+            }
+        } else if (e.target.className == 'play') {
+            gamevar(gameselection);
+            // hide modal after click on play button
+            modal.style.display = 'none';
+        }
+        if (gameselection.length == 2 && gameselection[0] != null) {
+            playbtn.style.display = 'inline-block';
+        }
+    })
+
+}
+var gamevar = function (properties) {
+    let genemies = 0
+    // setting the enemies
+    if (properties[1] == 'Hard') {
+        genemies = 15;
+    } else if (properties[1] == 'Medium') {
+        genemies = 8;
+    } else {
+        genemies = 4;
+    }
+    for (let i = 0; i < genemies; i++) {
+        allEnemies.push(new Enemy(i));
+    }
+    // setting the player
+    player.sprite = properties[0];
+}
 
 
-
+// Now instantiate your objects.
+// Place all enemy objects in an array called allEnemies
+// Place the player object in a variable called player
+var player = new Player();
+var allEnemies = [];
+let gameselection = []
+game();
